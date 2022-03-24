@@ -17,6 +17,7 @@ script.addEventListener('load', function() {
     jQuery.noConflict();
     jQuery(document).ready(function($) {
         calc($)
+        document.getElementById("previewTax").addEventListener("click", myFunction);
     });
 
     function calc($) {
@@ -24,16 +25,16 @@ script.addEventListener('load', function() {
             var self = $(this);
 
             var instrument = self.find("td:eq(0)").text().trim();
-            var qty = parseFloat(self.find("td:eq(1)").text().trim());
-            var avgCost = parseFloat(self.find("td:eq(2)").text().trim());
-            var ltp = parseFloat(self.find("td:eq(3)").text().trim()); // last traded price
+            var qty = parseFloat(process(self.find("td:eq(1)").text().trim()));
+            var avgcost = parseFloat(process(self.find("td:eq(2)").text().trim()));
+            var ltp = parseFloat(process(self.find("td:eq(3)").text().trim())); // last traded price
 
             if (isNaN(qty)) {
                 var filter = self.find("td").find('.dim').text().replace('T1:', '').trim()
                 qty = filter
             }
-            const actualProfit = cal_delivery(avgCost, ltp, qty)
-            self.append(`<td> ${actualProfit} </td>`);
+            const actualProfit = cal_delivery(avgcost, ltp, qty)
+            self.append(`<td> <button id="previewTax" instrument=${instrument} qty=${qty} avgcost=${avgcost} ltp=${ltp} > ${actualProfit} </button> </td>`);
         });
     }
 
@@ -50,7 +51,17 @@ script.addEventListener('load', function() {
         var breakeven = parseFloat(parseFloat(total_tax / qty).toFixed(2));
         breakeven = isNaN(breakeven) ? 0 : breakeven
         var net_profit = parseFloat(parseFloat(((sp - bp) * qty) - total_tax).toFixed(2));
+        console.log(net_profit)
         return net_profit
+    }
+
+    function process(txt) {
+        txt = txt.replace(",", "");
+        return txt;
+    }
+
+    function myFunction() {
+        confirm("Sure?");
     }
 
 
